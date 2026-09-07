@@ -28,3 +28,11 @@ All notable changes to Project Orihime are documented in this file with exact UT
 - **Technical Summary**:
   - **ClickHouse MCP Tool**: Queries frame-by-frame metadata, distinguishes single isolated dead frames (targeted for Imagen 3 healing) from continuous temporal degradation sequences (targeted for FFmpeg `minterpolate`), and mathematically computes 8-bit to 12-bit color offsets (`luma_lift_offset`, `luma_gain_multiplier`, `chroma_u_offset`, `chroma_v_offset`).
   - **Grafana MCP Tool**: Monitors real-time rendering telemetry (FPS, GPU memory bus utilization, NVENC load) and implements autonomous stabilization when FPS drops below 24fps (`< 24.0 fps`), dynamically increasing thread allocation and switching `zscale` filter kernels (`spline36` -> `bicubic`/`bilinear`).
+
+## [2026-09-07T11:40:59Z] - Milestone 3: Day 2 Agentic Logic, Command Factory, 3D LUT & Imagen 3 Healer
+- **Action**: Created `Lut3DGenerator` (`src/orihime/engine/lut_generator.py`), `FFmpegCommandFactory` (`src/orihime/engine/command_factory.py`), `Imagen3FrameHealer` (`src/orihime/engine/imagen_healer.py`), and `OrihimeOrchestrator` (`src/orihime/agent/orchestrator.py`).
+- **Technical Summary**:
+  - **Zero-NumPy 3D LUT Generator**: Synthesizes broadcast `.cube` 3D LUT files directly from ClickHouse color offsets without CPU-bound Python/NumPy pixel loops.
+  - **The Command Factory**: Synthesizes native C FFmpeg `filter_complex` strings enforcing `zscale=...:dither=error_diffusion`, custom `lut3d`, `minterpolate` motion-compensated pixel prediction for continuous degradation, `-hwaccel cuda`, `hevc_nvenc`, and `-pix_fmt yuv420p10le`.
+  - **Imagen 3 Isolated Frame Healer**: Generates frame-accurate reference prompts and connects to `imagen-3.0-generate-002` for isolated single-frame dropout healing.
+  - **Gemini 1.5 Pro Autonomous Orchestrator**: Integrates ClickHouse MCP, Grafana MCP, Imagen 3 Healer, and the Command Factory into an autonomous reasoning loop.
