@@ -32,7 +32,7 @@ def render_app() -> None:
             step=0.5,
             help="Slide below 24.0 fps to trigger Gemini 1.5 Pro autonomous thread & zscale kernel stabilization.",
         )
-        run_button = st.button("🚀 Run Autonomous Reconstruction Pass", type="primary", use_container_width=True)
+        run_button = st.button("🚀 Run Autonomous Reconstruction Pass", type="primary", width="stretch")
 
     orchestrator = OrihimeOrchestrator()
     ch_tool = ClickHouseMCPTool()
@@ -109,7 +109,7 @@ def render_app() -> None:
             }
             for f in frames
         ]
-        st.dataframe(frame_rows, use_container_width=True, hide_index=True)
+        st.dataframe(frame_rows, width="stretch", hide_index=True)
 
         st.subheader("🎨 Calculated 8-Bit → 12-Bit HDR Color Offsets & 3D LUT")
         c1, c2, c3, c4 = st.columns(4)
