@@ -16,3 +16,9 @@ All notable changes to Project Orihime are documented in this file with exact UT
   - Authored a technical, judge-focused `README.md` featuring a complete Mermaid architecture diagram covering the Telemetry & Observability Layer (ClickHouse & Grafana MCP), Autonomous Orchestrator (Gemini 1.5 Pro), High-Performance 4K Execution Engine (NVDEC/NVENC + `zscale`), and Temporal Integrity Engine (`Imagen 3` + `minterpolate`).
   - Documented color science requirements (`dither=error_diffusion` on `zscale`, `-pix_fmt yuv420p10le`) and the full 72-Hour Sprint Roadmap exactly as specified in the technical plan.
 - **Git Integration**: Initialized local Git repository, linked remote origin `https://github.com/Kushal25Gupta/Orihime`, staged all specification and documentation artifacts (`CHANGELOG.md`, `README.md`, and the reference architecture PDF), and pushed to the remote branch.
+
+## [2026-09-07T11:31:22Z] - Milestone 1: Production Scaffolding, ClickHouse Schema & Pydantic v2 Models
+- **Action**: Created PEP 621 `pyproject.toml`, `.gitignore`, ClickHouse database schema (`sql/init_clickhouse.sql`), `docker-compose.yml`, and core Pydantic v2 models (`src/orihime/models/schemas.py`).
+- **Technical Summary**:
+  - Provisioned `docker-compose.yml` and `sql/init_clickhouse.sql` defining the `orihime_telemetry.frame_qc_metadata` MergeTree table for frame-by-frame Luma/Chroma/Bit-Depth telemetry and seed data containing both isolated dead frames (frame 142) and continuous motion degradation sequences (frames 310–312).
+  - Implemented strict Pydantic v2 validation in `FFmpegCommandSpec` enforcing Section 6 Implementation Notes: `zscale_dither="error_diffusion"` and `-pix_fmt yuv420p10le` (or higher 10/12-bit formats).
