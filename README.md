@@ -138,6 +138,33 @@ To guarantee broadcast-grade visual fidelity and prevent quantization artifacts 
 
 ---
 
+## 🚀 Quick Start & Judge Verification
+
+### 1. Install & Run Automated Verification Suite
+```bash
+# Install package in editable mode with dev dependencies
+pip install -e ".[dev]"
+
+# Run automated verification suite (ClickHouse/Grafana MCP, Section 6 Color Science, 3D LUT & Command Factory)
+pytest -v
+```
+
+### 2. Run Autonomous Reconstruction CLI
+```bash
+# Normal 59.94 fps execution pass
+python -m orihime.cli --asset 4k_master_reel_01 --fps 59.94
+
+# Simulate <24fps telemetry drop to watch Gemini 1.5 Pro autonomously expand threads & switch zscale kernels
+python -m orihime.cli --asset 4k_master_reel_01 --fps 18.5
+```
+
+### 3. Launch Broadcast Streamlit Control Room UI
+```bash
+streamlit run src/orihime/ui/app.py
+```
+
+---
+
 ## 📜 Changelog & Audit Trail
 
 Every architectural modification, implementation step, and commit is tracked with strict UTC timestamps in [`CHANGELOG.md`](./CHANGELOG.md).

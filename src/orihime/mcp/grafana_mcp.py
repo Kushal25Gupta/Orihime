@@ -14,9 +14,7 @@ class GrafanaMCPTool:
     def __init__(self, grafana_url: str = settings.grafana_url):
         self.grafana_url = grafana_url.rstrip("/")
 
-    def fetch_runtime_telemetry(
-        self, simulated_fps: float | None = None
-    ) -> GrafanaRuntimeTelemetry:
+    def fetch_runtime_telemetry(self, simulated_fps: float | None = None) -> GrafanaRuntimeTelemetry:
         """Retrieves current FFmpeg rendering telemetry from Grafana (or deterministic live metric)."""
         if simulated_fps is not None:
             is_low_fps = simulated_fps < 24.0
@@ -32,9 +30,7 @@ class GrafanaMCPTool:
             headers = {}
             if settings.grafana_api_key:
                 headers["Authorization"] = f"Bearer {settings.grafana_api_key}"
-            response = httpx.get(
-                f"{self.grafana_url}/api/health", headers=headers, timeout=1.5
-            )
+            response = httpx.get(f"{self.grafana_url}/api/health", headers=headers, timeout=1.5)
             if response.status_code == 200:
                 return GrafanaRuntimeTelemetry(
                     current_fps=59.8,
@@ -54,9 +50,7 @@ class GrafanaMCPTool:
             current_zscale_kernel="spline36",
         )
 
-    def evaluate_and_adjust_pipeline(
-        self, telemetry: GrafanaRuntimeTelemetry
-    ) -> dict[str, Any]:
+    def evaluate_and_adjust_pipeline(self, telemetry: GrafanaRuntimeTelemetry) -> dict[str, Any]:
         """Autonomously adjusts FFmpeg threading model or switches filter kernels if FPS < 24."""
         if not telemetry.requires_autonomous_stabilization:
             return {
@@ -75,9 +69,7 @@ class GrafanaMCPTool:
         # Autonomous stabilization triggered when FPS < 24fps
         new_threads = min(telemetry.active_threads * 2, 32)
         new_filter_threads = min(max(telemetry.active_threads, 8), 16)
-        new_kernel: Literal["bilinear", "bicubic"] = (
-            "bilinear" if telemetry.current_fps < 18.0 else "bicubic"
-        )
+        new_kernel: Literal["bilinear", "bicubic"] = "bilinear" if telemetry.current_fps < 18.0 else "bicubic"
 
         return {
             "status": "CRITICAL_LOW_FPS_RECOVERY",

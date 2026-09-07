@@ -27,12 +27,8 @@ class FrameTelemetry(BaseModel):
     luma_avg: float = Field(..., description="Average Luma (Y) value across frame")
     chroma_u_avg: float = Field(..., description="Average Chroma Cb (U) channel value")
     chroma_v_avg: float = Field(..., description="Average Chroma Cr (V) channel value")
-    is_missing_frame: bool = Field(
-        default=False, description="True if frame is a missing dropout ('hole' in timeline)"
-    )
-    is_corrupted: bool = Field(
-        default=False, description="True if frame exhibits corruption or degradation"
-    )
+    is_missing_frame: bool = Field(default=False, description="True if frame is a missing dropout ('hole' in timeline)")
+    is_corrupted: bool = Field(default=False, description="True if frame exhibits corruption or degradation")
     temporal_diff_score: float = Field(
         default=0.0, description="Optical flow / temporal difference metric vs adjacent frames"
     )
@@ -44,9 +40,7 @@ class ColorOffsetCalculation(BaseModel):
     source_bit_depth: int = Field(default=8, description="Detected source bit depth")
     target_bit_depth: int = Field(default=12, description="Target HDR expansion bit depth")
     luma_lift_offset: float = Field(..., description="Calculated Luma black-level lift offset")
-    luma_gain_multiplier: float = Field(
-        ..., description="Calculated peak brightness HDR expansion multiplier"
-    )
+    luma_gain_multiplier: float = Field(..., description="Calculated peak brightness HDR expansion multiplier")
     chroma_u_offset: float = Field(..., description="Chroma U channel neutral balance shift")
     chroma_v_offset: float = Field(..., description="Chroma V channel neutral balance shift")
     lut_3d_size: int = Field(default=33, description="Cube size for generated 3D LUT (33x33x33)")
@@ -56,12 +50,8 @@ class GrafanaRuntimeTelemetry(BaseModel):
     """Real-time rendering telemetry monitored via Grafana MCP Tool."""
 
     current_fps: float = Field(..., ge=0.0, description="Current FFmpeg reconstruction FPS")
-    gpu_memory_bus_util_pct: float = Field(
-        ..., ge=0.0, le=100.0, description="GPU memory bus utilization percentage"
-    )
-    nvenc_load_pct: float = Field(
-        ..., ge=0.0, le=100.0, description="NVIDIA NVENC hardware encoder load"
-    )
+    gpu_memory_bus_util_pct: float = Field(..., ge=0.0, le=100.0, description="GPU memory bus utilization percentage")
+    nvenc_load_pct: float = Field(..., ge=0.0, le=100.0, description="NVIDIA NVENC hardware encoder load")
     active_threads: int = Field(..., ge=1, description="Currently active FFmpeg threads")
     current_zscale_kernel: Literal["spline36", "bicubic", "bilinear", "lanczos"] = Field(
         default="spline36", description="Active Zimg scaling/conversion kernel"
@@ -114,7 +104,5 @@ class FFmpegCommandSpec(BaseModel):
     def validate_high_bit_depth_pix_fmt(cls, v: str) -> str:
         allowed = {"yuv420p10le", "yuv422p10le", "yuv444p10le", "yuv420p12le", "yuv444p12le"}
         if v not in allowed:
-            raise ValueError(
-                f"Specification Violation: pix_fmt must be yuv420p10le or higher (got '{v}')"
-            )
+            raise ValueError(f"Specification Violation: pix_fmt must be yuv420p10le or higher (got '{v}')")
         return v

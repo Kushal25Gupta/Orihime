@@ -45,9 +45,7 @@ class FFmpegCommandFactory:
             ReconstructionMode.TEMPORAL_MINTERPOLATE,
             ReconstructionMode.HYBRID_DUAL_MODE,
         ):
-            minterpolate_filter = (
-                "minterpolate=mi_mode=mci:mc_mode=aobmc:me_mode=bidir:vsbmc=1:fps=60"
-            )
+            minterpolate_filter = "minterpolate=mi_mode=mci:mc_mode=aobmc:me_mode=bidir:vsbmc=1:fps=60"
             filters.append(minterpolate_filter)
 
         filter_complex = ",".join(filters)

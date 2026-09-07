@@ -33,14 +33,10 @@ class OrihimeSettings(BaseSettings):
     clickhouse_port: int = Field(default=8123, description="ClickHouse HTTP port")
     clickhouse_user: str = Field(default="default", description="ClickHouse username")
     clickhouse_password: str = Field(default="", description="ClickHouse password")
-    clickhouse_database: str = Field(
-        default="orihime_telemetry", description="ClickHouse telemetry database"
-    )
+    clickhouse_database: str = Field(default="orihime_telemetry", description="ClickHouse telemetry database")
 
     # Grafana Observability Configuration
-    grafana_url: str = Field(
-        default="http://localhost:3000", description="Grafana instance URL"
-    )
+    grafana_url: str = Field(default="http://localhost:3000", description="Grafana instance URL")
     grafana_api_key: str = Field(default="", description="Grafana API token")
 
     # Execution Engine Defaults

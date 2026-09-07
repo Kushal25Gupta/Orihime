@@ -21,7 +21,7 @@ class Lut3DGenerator:
         lines: list[str] = [
             "# Project Orihime Dynamic 3D LUT",
             f"# Generated from ClickHouse QC Telemetry (8-bit -> {offsets.target_bit_depth}-bit HDR)",
-            f"TITLE \"Orihime_HDR_Reconstruction_LUT\"",
+            'TITLE "Orihime_HDR_Reconstruction_LUT"',
             f"LUT_3D_SIZE {lut_size}",
             "DOMAIN_MIN 0.0 0.0 0.0",
             "DOMAIN_MAX 1.0 1.0 1.0",
