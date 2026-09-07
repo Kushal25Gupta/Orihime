@@ -22,3 +22,9 @@ All notable changes to Project Orihime are documented in this file with exact UT
 - **Technical Summary**:
   - Provisioned `docker-compose.yml` and `sql/init_clickhouse.sql` defining the `orihime_telemetry.frame_qc_metadata` MergeTree table for frame-by-frame Luma/Chroma/Bit-Depth telemetry and seed data containing both isolated dead frames (frame 142) and continuous motion degradation sequences (frames 310–312).
   - Implemented strict Pydantic v2 validation in `FFmpegCommandSpec` enforcing Section 6 Implementation Notes: `zscale_dither="error_diffusion"` and `-pix_fmt yuv420p10le` (or higher 10/12-bit formats).
+
+## [2026-09-07T11:37:12Z] - Milestone 2: ClickHouse & Grafana Model Context Protocol (MCP) Connectors
+- **Action**: Created `ClickHouseMCPTool` (`src/orihime/mcp/clickhouse_mcp.py`) and `GrafanaMCPTool` (`src/orihime/mcp/grafana_mcp.py`).
+- **Technical Summary**:
+  - **ClickHouse MCP Tool**: Queries frame-by-frame metadata, distinguishes single isolated dead frames (targeted for Imagen 3 healing) from continuous temporal degradation sequences (targeted for FFmpeg `minterpolate`), and mathematically computes 8-bit to 12-bit color offsets (`luma_lift_offset`, `luma_gain_multiplier`, `chroma_u_offset`, `chroma_v_offset`).
+  - **Grafana MCP Tool**: Monitors real-time rendering telemetry (FPS, GPU memory bus utilization, NVENC load) and implements autonomous stabilization when FPS drops below 24fps (`< 24.0 fps`), dynamically increasing thread allocation and switching `zscale` filter kernels (`spline36` -> `bicubic`/`bilinear`).
