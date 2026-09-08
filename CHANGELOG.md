@@ -53,3 +53,9 @@ All notable changes to Project Orihime are documented in this file with exact UT
 - **Technical Summary**:
   - Added real FFmpeg source reel generation (`raw_assets/4k_master_reel_01.mp4`) with a visible frame dropout hole at frame 142 and real native C FFmpeg reconstruction execution (`scratch_output/4k_master_reel_01_hdr12_healed.mp4`).
   - Upgraded the Streamlit Control Room UI with live step-by-step `st.status` progress streaming, `st.toast` completion notifications, a persistent execution pass counter, and side-by-side interactive video comparison players.
+
+## [2026-09-08T08:55:38Z] - Fixed FFmpeg `zscale` Colorspace Negotiation for Browser MP4 Playback
+- **Action**: Updated `VideoAssetManager.execute_real_ffmpeg_reconstruction` in `src/orihime/engine/video_generator.py` and `st.video` streaming in `src/orihime/ui/app.py`.
+- **Technical Summary**:
+  - Diagnosed 0-byte output caused by `zscale` error `code 3074: no path between colorspaces` after `lut3d` RGB output; explicitly configured `zscale=min=0:matrix=709:filter=...:dither=error_diffusion` so FFmpeg produces a valid 1.1 MB H.264 `yuv420p` MP4 file.
+  - Updated `st.video` to stream raw MP4 byte buffers (`format="video/mp4"`) and added automated file-size assertions (`> 100KB`) to `tests/test_orihime_ui.py`.

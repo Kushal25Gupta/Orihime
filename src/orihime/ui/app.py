@@ -128,13 +128,13 @@ def render_app() -> None:
     with vcol1:
         st.markdown("**🔴 Original 8-Bit SDR Source (Corrupted Frame Dropout Hole at 1.2s)**")
         src_path = Path(result.get("source_video_file", "raw_assets/4k_master_reel_01.mp4"))
-        if src_path.exists():
-            st.video(str(src_path))
+        if src_path.exists() and src_path.stat().st_size > 0:
+            st.video(src_path.read_bytes(), format="video/mp4")
     with vcol2:
         st.markdown("**🟢 Reconstructed 12-Bit HDR Output (`zscale` + 3D LUT + Frame Healing)**")
         healed_path = Path(result.get("healed_video_file", "scratch_output/4k_master_reel_01_hdr12_healed.mp4"))
-        if healed_path.exists():
-            st.video(str(healed_path))
+        if healed_path.exists() and healed_path.stat().st_size > 0:
+            st.video(healed_path.read_bytes(), format="video/mp4")
 
     st.divider()
 

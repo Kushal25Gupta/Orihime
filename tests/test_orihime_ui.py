@@ -30,3 +30,10 @@ def test_streamlit_app_interactive_button_and_low_fps_slider() -> None:
     assert at.metric[0].value == "18.50 fps"
     assert at.metric[1].value == "16 Threads"
     assert at.metric[2].value == "BICUBIC"
+
+    # Verify both video files are generated and non-empty (>100KB)
+    last_res = at.session_state["last_result"]
+    src_vid = Path(last_res["source_video_file"])
+    healed_vid = Path(last_res["healed_video_file"])
+    assert src_vid.exists() and src_vid.stat().st_size > 100_000
+    assert healed_vid.exists() and healed_vid.stat().st_size > 100_000
