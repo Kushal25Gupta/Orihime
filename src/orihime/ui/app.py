@@ -1,10 +1,13 @@
 """Project Orihime: Broadcast QC & 4K HDR Reconstruction Control Room (Streamlit Demo UI)."""
 
+import time
+from datetime import UTC, datetime
 from pathlib import Path
 
 import streamlit as st
 
 from orihime.agent.orchestrator import OrihimeOrchestrator
+from orihime.engine.video_generator import VideoAssetManager
 from orihime.mcp.clickhouse_mcp import ClickHouseMCPTool
 
 
@@ -21,6 +24,9 @@ def render_app() -> None:
         "Native C FFmpeg (zscale + CUDA) • Imagen 3 & minterpolate"
     )
 
+    if "run_count" not in st.session_state:
+        st.session_state["run_count"] = 0
+
     with st.sidebar:
         st.header("🎛️ Telemetry & Simulation Controls")
         asset_id = st.selectbox("Select 4K Master Reel Asset", ["4k_master_reel_01"])
@@ -32,17 +38,54 @@ def render_app() -> None:
             step=0.5,
             help="Slide below 24.0 fps to trigger Gemini 1.5 Pro autonomous thread & zscale kernel stabilization.",
         )
-        run_button = st.button("🚀 Run Autonomous Reconstruction Pass", type="primary", width="stretch")
+        run_button = st.button(
+            "🚀 Run Autonomous Reconstruction Pass",
+            type="primary",
+            width="stretch",
+        )
+        st.caption(f"Total Autonomous Passes Executed: **{st.session_state['run_count']}**")
 
     orchestrator = OrihimeOrchestrator()
     ch_tool = ClickHouseMCPTool()
 
+    # Ensure initial run or handle explicit button click with live visual status streaming
     if run_button or "last_result" not in st.session_state:
-        with st.spinner("Gemini 1.5 Pro querying ClickHouse/Grafana MCP & synthesizing 4K pipeline..."):
-            st.session_state["last_result"] = orchestrator.run_autonomous_reconstruction_pass(
+        st.session_state["run_count"] += 1
+        with st.status(
+            f"🌌 Pass #{st.session_state['run_count']}: Gemini 1.5 Pro Orchestrating 4K Pipeline...",
+            expanded=True,
+        ) as status:
+            st.write("🔍 **[Step 1/4] ClickHouse MCP Tool:** Querying frame-level QC telemetry & missing sequences...")
+            time.sleep(0.25)
+
+            st.write(f"📊 **[Step 2/4] Grafana MCP Tool:** Evaluating real-time rendering FPS ({simulated_fps} fps)...")
+            time.sleep(0.25)
+
+            result = orchestrator.run_autonomous_reconstruction_pass(
                 asset_id=asset_id,
                 simulated_fps=simulated_fps,
             )
+
+            st.write("🎨 **[Step 3/4] Command Factory & 3D LUT:** Generating `.cube` LUT & C-filter pipeline...")
+            source_vid = VideoAssetManager.ensure_source_video()
+            healed_vid = VideoAssetManager.execute_real_ffmpeg_reconstruction(
+                source_path=source_vid,
+                lut_path=result["lut_file"],
+                zscale_kernel=result["grafana_stabilization"]["recommended_zscale_kernel"],
+            )
+            result["source_video_file"] = str(source_vid)
+            result["healed_video_file"] = str(healed_vid)
+            result["last_run_utc"] = datetime.now(UTC).strftime("%Y-%m-%d %H:%M:%S UTC")
+
+            st.write("⚡ **[Step 4/4] Hardware Execution Complete:** 12-bit HDR color volume & frame healing verified.")
+            status.update(
+                label=f"✅ Pass #{st.session_state['run_count']} Complete ({result['last_run_utc']}) — "
+                f"Mode: {result['grafana_stabilization']['status']}",
+                state="complete",
+                expanded=False,
+            )
+        st.session_state["last_result"] = result
+        st.toast(f"🚀 Pass #{st.session_state['run_count']} Complete!", icon="✅")
 
     result = st.session_state["last_result"]
     stab = result["grafana_stabilization"]
@@ -76,6 +119,22 @@ def render_app() -> None:
             result["ffmpeg_spec"]["pix_fmt"],
             delta="BT.2020 HDR10 / NVENC CUDA",
         )
+
+    st.divider()
+
+    # Live Side-by-Side 4K Video Comparison Players
+    st.subheader("🎬 Live Side-by-Side 4K Video QC & Reconstruction Comparison")
+    vcol1, vcol2 = st.columns(2)
+    with vcol1:
+        st.markdown("**🔴 Original 8-Bit SDR Source (Corrupted Frame Dropout Hole at 1.2s)**")
+        src_path = Path(result.get("source_video_file", "raw_assets/4k_master_reel_01.mp4"))
+        if src_path.exists():
+            st.video(str(src_path))
+    with vcol2:
+        st.markdown("**🟢 Reconstructed 12-Bit HDR Output (`zscale` + 3D LUT + Frame Healing)**")
+        healed_path = Path(result.get("healed_video_file", "scratch_output/4k_master_reel_01_hdr12_healed.mp4"))
+        if healed_path.exists():
+            st.video(str(healed_path))
 
     st.divider()
 

@@ -47,3 +47,9 @@ All notable changes to Project Orihime are documented in this file with exact UT
 ## [2026-09-07T11:58:34Z] - Streamlit 1.63+ Modern API Update (`width='stretch'`)
 - **Action**: Updated `src/orihime/ui/app.py` to replace deprecated `use_container_width=True` with `width="stretch"` in `st.button` and `st.dataframe`.
 - **Technical Summary**: Eliminated Streamlit runtime deprecation warnings for post-2025 Streamlit versions while preserving responsive full-width layout in the Broadcast Control Room UI.
+
+## [2026-09-08T08:35:04Z] - Interactive UI Debugging & Real 4K Video Reconstruction Player
+- **Action**: Created `VideoAssetManager` (`src/orihime/engine/video_generator.py`) and enhanced `src/orihime/ui/app.py`.
+- **Technical Summary**:
+  - Added real FFmpeg source reel generation (`raw_assets/4k_master_reel_01.mp4`) with a visible frame dropout hole at frame 142 and real native C FFmpeg reconstruction execution (`scratch_output/4k_master_reel_01_hdr12_healed.mp4`).
+  - Upgraded the Streamlit Control Room UI with live step-by-step `st.status` progress streaming, `st.toast` completion notifications, a persistent execution pass counter, and side-by-side interactive video comparison players.
