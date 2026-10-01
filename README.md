@@ -1,5 +1,5 @@
 <div align="center">
-
+yoo bro kya karta h ye project easy languge me bata and ye bleach ki heroine pe kyon rakha iska name
 # 🌌 Project Orihime
 ### Autonomous Agentic Post-Production Engine for Automated 4K QC, 12-Bit HDR Expansion & Frame-Level Reconstruction
 
